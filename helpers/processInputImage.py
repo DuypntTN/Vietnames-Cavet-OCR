@@ -1,5 +1,6 @@
 from PIL import Image
 from PIL import ImageOps
+from PIL import ImageFilter
 import cv2
 
 
@@ -25,10 +26,15 @@ def process(image_path):
     # Convert the image to grayscale:
     im_cp = ImageOps.grayscale(im_cp)
 
+    # Moprhological operations to remove noise:
+    im_cp = im_cp.filter(ImageFilter.MinFilter(3))
+    im_cp = im_cp.filter(ImageFilter.MaxFilter(5))
+
+
     # Equalize the histogram:
     equalized = ImageOps.equalize(im_cp)
 
-    # # Show the equalized image:
+    # Show the equalized image:
     # equalized.show()
 
     return equalized
