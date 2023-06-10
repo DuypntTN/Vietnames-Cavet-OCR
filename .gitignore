@@ -1,0 +1,7 @@
+# Ignore images
+*.png
+*.jpg
+# Ignore pth
+*.pth
+*.pt
+*.pyc
