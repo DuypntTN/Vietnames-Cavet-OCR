@@ -29,7 +29,7 @@ def process(image_path):
     # Moprhological operations to remove noise:
     im_cp = im_cp.filter(ImageFilter.MinFilter(3))
     im_cp = im_cp.filter(ImageFilter.MaxFilter(5))
-
+    
 
     # Equalize the histogram:
     equalized = ImageOps.equalize(im_cp)
