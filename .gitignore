@@ -1,6 +1,7 @@
 # Ignore images
 *.png
 *.jpg
+*.jpeg
 # Ignore pth
 *.pth
 *.pt

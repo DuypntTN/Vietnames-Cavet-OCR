@@ -3,6 +3,10 @@ import os
 import cv2
 import shutil
 from helpers.cavetVerify import isImageContainCavetInRightDirection
+# from models.VietOcr.loadModel import load
+from vietocr.tool.predictor import Predictor
+from vietocr.tool.config import Cfg
+from helpers.processInputImage import process
 
 
 class OcrOfficial:
@@ -14,13 +18,18 @@ class OcrOfficial:
         '''
         print("Init OcrOfficial", kwargs)
         # Load model cavet detector
-        self.model_cavet_detector = torch.hub.load('ultralytics/yolov5', 'custom',
+        self.model_cavet_detector = torch.hub.load("ultralytics/yolov5", 'custom',
                                                    path=kwargs["wc_path"], trust_repo=True)
         # Load model cavet field detector
-        self.model_cavet_fields_detector = torch.hub.load('ultralytics/yolov5', 'custom',
+        self.model_cavet_fields_detector = torch.hub.load("ultralytics/yolov5", 'custom',
                                                           path=kwargs["wcf_path"], trust_repo=True)
         # Load model text recognizer
-        self.model_text_recognizer = None
+        config = Cfg.load_config_from_name('vgg_transformer')
+        config['weights'] = './weights/Viet_ocr_transformerocr.pth'
+        config['cnn']['pretrained'] = False
+        config['device'] = 'cuda:0'
+        config['predictor']['beamsearch'] = False
+        self.model_text_recognizer = Predictor(config)
 
     def set_image_config(self, **kwargs):
         '''
@@ -111,6 +120,8 @@ class OcrOfficial:
                     for i in range(len(classes)):
                         # Get class
                         class_i = classes[i]
+                        if class_i == 'cavet_card':
+                            continue
                         # If class is in list of set pass
                         if class_i in [x[0] for x in list_of_set]:
                             continue
@@ -129,9 +140,22 @@ class OcrOfficial:
                         # Crop image
                         cavet_fields_detect_crop_im = cavet_detect_crop_im[coords_i[1]:coords_i[3],
                                                                            coords_i[0]:coords_i[2]]
+                        # Image dir
+                        save_im_dir = os.path.join(save_cavet_fields_detector_path,
+                                                   class_i + "_" + im_name)
                         # Save image
-                        cv2.imwrite(os.path.join(save_cavet_fields_detector_path,
-                                                 class_i + "_" + im_name), cavet_fields_detect_crop_im)
+                        cv2.imwrite(save_im_dir, cavet_fields_detect_crop_im)
+                        # Text recognizer
+                        try:
+                            # Get Im
+                            read_im = process(save_im_dir)
+                            result_text_recognizer = self.model_text_recognizer.predict(
+                                read_im)
+                            # Get text
+                            print(
+                                f"Text in {class_i} is {result_text_recognizer}")
+                        except Exception as e:
+                            print(e)
                 else:
                     continue
             # Cavet detector
