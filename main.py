@@ -8,6 +8,7 @@ from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
 from helpers.processInputImage import process
 from PIL import Image
+import json
 
 
 class OcrOfficial:
@@ -53,6 +54,8 @@ class OcrOfficial:
             im_list = os.listdir(im_root_path)
             # Remove temp folder
             shutil.rmtree(self.save_cavet_detector_path)
+            # Return data
+            return_data = []
             # Loop image
             for im_name in im_list:
                 ##################################### Process the folder terms#####################################
@@ -117,6 +120,12 @@ class OcrOfficial:
                                                                             "xmax", "ymax"]]
                     # List of set (class, coords)
                     list_of_set = []
+                    # Object to save ({
+                    #   "chassis":...
+                    #   "plate":...
+                    # })
+                    object_to_save = {}
+                    object_to_save["image_name"] = im_name
                     # Loop through classes and coords
                     for i in range(len(classes)):
                         # Get class
@@ -153,14 +162,29 @@ class OcrOfficial:
                             result_text_recognizer = self.model_text_recognizer.predict(
                                 read_im)
                             # Get text
-                            print(
-                                f"Text in {class_i} is {result_text_recognizer}")
+                            # print(
+                            #     f"Text in {class_i} is {result_text_recognizer}")
+                            # Save to object
+                            object_to_save[class_i] = result_text_recognizer
                         except Exception as e:
                             print(e)
+                            continue
+                    # Save to return data to JSON
+
+                    save_dir = os.path.join(
+                        save_cavet_fields_detector_path, "json")
+                    os.makedirs(save_dir, exist_ok=True)
+                    ##################################### Save to JSON terms#####################################
+                    # Save to JSON
+                    with open(os.path.join(save_dir, im_name_without_ext + ".json"), 'w', encoding='utf-8') as f:
+                        json.dump(object_to_save, f, ensure_ascii=False)
+
+                    # Append to return data
+                    return_data.append(object_to_save)
                 else:
                     continue
             # Cavet detector
-            pass
+            return return_data
         except Exception as e:
             print(e)
 
@@ -175,4 +199,5 @@ if __name__ == "__main__":
         save_cavet_detector_path="./run/temp/",
         save_cavet_fields_detector_path="./run/temp/"
     )
-    ocr.run()
+    json = ocr.run()
+    print(json)

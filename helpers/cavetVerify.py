@@ -66,7 +66,7 @@ def isImageContainCavetInRightDirection(im=None):
     # Alpha: Contrast control (1.0-3.0) - Beta: Brightness control (0-100)
     # Use mean of pixel value to calculate alpha and beta
     alpha = np.mean(im_cp) / 127.5
-    beta = 100 - alpha * 100
+    beta = 100 - alpha * 40
 
     im_cp = cv2.convertScaleAbs(im_cp, alpha=alpha, beta=beta)
     equalized = cv2.equalizeHist(im_cp)
