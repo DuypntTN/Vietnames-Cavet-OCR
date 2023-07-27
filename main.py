@@ -6,7 +6,7 @@ from helpers.cavetVerify import isImageContainCavetInRightDirection
 # from models.VietOcr.loadModel import load
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
-from helpers.processInputImage import process
+from helpers.processInputImage import process,processImageBeforeRecognitionText
 from PIL import Image
 import json
 
@@ -157,8 +157,14 @@ class OcrOfficial:
                         cv2.imwrite(save_im_dir, cavet_fields_detect_crop_im)
                         # Text recognizer
                         try:
-                            read_im = Image.open(
-                                save_im_dir) if class_i != 'plate' else process(save_im_dir)
+                            # read_im = Image.open(
+                            #     save_im_dir) if class_i != 'plate' else process(save_im_dir)
+
+                            read_im = processImageBeforeRecognitionText(save_im_dir)
+
+                            # Save image for debug
+                            read_im.save(os.path.join(save_cavet_fields_detector_path, class_i + "_processed" + im_name))
+
                             result_text_recognizer = self.model_text_recognizer.predict(
                                 read_im)
                             # Get text

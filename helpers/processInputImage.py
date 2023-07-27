@@ -38,3 +38,25 @@ def process(image_path):
     # equalized.show()
 
     return equalized
+def processImageBeforeRecognitionText(image_path):
+
+    im = Image.open(image_path)
+
+
+    # Bicubic interpolation:
+    im = im.resize((im.width * 8, im.height * 8), Image.BICUBIC)
+
+    # # Histogram equalization:
+    # im = ImageOps.equalize(im)
+
+    # # Remove noise using gaussian filter:
+    # im = im.filter(ImageFilter.GaussianBlur(1))
+
+    # Convert to grayscale:
+    im = ImageOps.grayscale(im)
+
+
+    # # Show the image:
+    # im.show()
+
+    return im
