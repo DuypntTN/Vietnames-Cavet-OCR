@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import json
 from server.helpers.clearFolder import clearFolderContent
 from main import OcrOfficial
-
+from flask_cors import CORS, cross_origin
 
 UPLOAD_FOLDER = './run/detect/images'
 RETURN_FOLDER = './run/temp/'
@@ -17,6 +17,8 @@ def allowed_file(filename):
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+cors = CORS(app)
+
 
 
 @app.route('/upload', methods=['POST'])
@@ -44,6 +46,7 @@ def upload_file():
 
 
 @app.route('/cavet', methods=['POST'])
+@cross_origin()
 def cavet_card():
     clearFolderContent(app.config['UPLOAD_FOLDER'])
     if 'file' not in request.files:
