@@ -1,0 +1,61 @@
+đỏ
+trắng
+hồng
+đen
+xanh dương
+lam
+nâu
+xám
+xanh lá
+cam
+tím
+bạc
+đồng
+đỏ cam
+xanh
+trắng đỏ
+trắng đen
+hồng đỏ
+cam đỏ
+xanh lá đỏ
+đỏ trắng
+đỏ lam
+đỏ bạc
+đỏ xanh lá
+đỏ xanh dương
+xanh dương đỏ
+bạc đỏ
+nâu đỏ
+đồng đỏ
+đỏ tím
+đỏ xám
+đỏ đen
+đen đỏ
+đỏ đồng
+xám đỏ
+đỏ hồng
+lam đỏ
+tím đỏ
+đỏ nâu
+đỏ cam
+cam đen
+cam xanh lá
+cam xanh dương
+cam bạc
+cam tím
+cam xám
+cam đỏ
+cam hồng
+cam lam
+cam nâu
+cam đồng
+cam trắng
+cam đen
+đen cam
+xanh lá cam
+xanh lá đen
+xanh lá xanh dương
+xanh lá bạc
+xanh lá tím
+xanh lá xám
+xanh lá đỏ

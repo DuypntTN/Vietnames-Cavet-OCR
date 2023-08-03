@@ -7,6 +7,8 @@ from helpers.cavetVerify import isImageContainCavetInRightDirection
 from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
 from helpers.processInputImage import process,processImageBeforeRecognitionText
+from helpers.levenshtein.levenshtein import find_best_match
+
 from PIL import Image
 import json
 
@@ -167,6 +169,13 @@ class OcrOfficial:
 
                             result_text_recognizer = self.model_text_recognizer.predict(
                                 read_im)
+                            
+                            # Spell check for color field
+                            result_text_recognizer = result_text_recognizer if class_i != 'color' else find_best_match(text = result_text_recognizer, directory='./helpers/levenshtein/color_dataset.txt')
+
+                            # Spell check for brands field
+                            # result_text_recognizer = result_text_recognizer if class_i != 'brand' else find_best_match(text = result_text_recognizer, directory='./helpers/levenshtein/car_brands.txt')
+
                             # Get text
                             # print(
                             #     f"Text in {class_i} is {result_text_recognizer}")
