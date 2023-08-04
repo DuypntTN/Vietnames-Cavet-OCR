@@ -174,7 +174,7 @@ class OcrOfficial:
                             result_text_recognizer = result_text_recognizer if class_i != 'color' else find_best_match(text = result_text_recognizer, directory='./helpers/levenshtein/color_dataset.txt')
 
                             # Spell check for brands field
-                            # result_text_recognizer = result_text_recognizer if class_i != 'brand' else find_best_match(text = result_text_recognizer, directory='./helpers/levenshtein/car_brands.txt')
+                            result_text_recognizer = result_text_recognizer if class_i != 'brand' else find_best_match(text = result_text_recognizer, directory='./helpers/levenshtein/car_brands.txt')
 
                             # Get text
                             # print(
