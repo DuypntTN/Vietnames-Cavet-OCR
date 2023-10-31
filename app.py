@@ -64,11 +64,29 @@ def cavet_card():
     else:
         return jsonify({'error': 'Invalid file type'}), 402
 
-
+@app.route('/cccd', methods=['POST'])
+@cross_origin()
+def cccd():
+    clearFolderContent(app.config['UPLOAD_FOLDER'])
+    if 'file' not in request.files:
+        return jsonify({'error': 'input image not provided'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No input image selected'}), 401
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        # RUN DETECT HERE
+        json = ocr.run(type="cccd")
+        # GET THE JSON HERE
+        return jsonify(json)
+    else:
+        return jsonify({'error': 'Invalid file type'}), 402
 if __name__ == '__main__':
     ocr = OcrOfficial(
         wc_path="./weights/CavetDetector_v1.pt",
-        wcf_path="./weights/CavetFieldsDetecotor_v1.pt"
+        wcf_path="./weights/CavetFieldsDetecotor_v1.pt",
+        wcccdf_path="./weights/last.pt"
     )
     ocr.set_image_config(
         im_root_path="./run/detect/images",
