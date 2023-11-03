@@ -8,9 +8,12 @@ from vietocr.tool.predictor import Predictor
 from vietocr.tool.config import Cfg
 from helpers.processInputImage import process, processImageBeforeRecognitionText
 from helpers.levenshtein.levenshtein import find_best_match
-
+from helpers.cccd_text_proccesser.text_proccesser import name_processer, proccess_poo, proccess_por
 from PIL import Image
 import json
+import requests
+import json
+import re
 
 
 class OcrOfficial:
@@ -219,15 +222,15 @@ class OcrOfficial:
                         continue
                     # Coords
                     cccd_detect_coords = result_cccd_detector.pandas().xyxy[0][["xmin", "ymin",
-                                                                                  "xmax", "ymax"]]
+                                                                                "xmax", "ymax"]]
                     # Convert tensor to numpy
                     cccd_detect_coords = cccd_detect_coords.values.tolist()
                     # Convert to int
                     cccd_detect_coords = [list(map(int, box))
-                                           for box in cccd_detect_coords]
+                                          for box in cccd_detect_coords]
                     # Crop image
                     cccd_detect_crop_im = im[cccd_detect_coords[0][1]:cccd_detect_coords[0][3],
-                                              cccd_detect_coords[0][0]:cccd_detect_coords[0][2]]
+                                             cccd_detect_coords[0][0]:cccd_detect_coords[0][2]]
                     # Save image
                     cv2.imwrite(os.path.join(save_cavet_detector_path,
                                              im_name), cccd_detect_crop_im)
@@ -276,7 +279,7 @@ class OcrOfficial:
                             coords_i = list(map(int, coords_i))
                             # Crop image
                             cccd_fields_detect_crop_im = cccd_detect_crop_im[coords_i[1]:coords_i[3],
-                                                                               coords_i[0]:coords_i[2]]
+                                                                             coords_i[0]:coords_i[2]]
                             # Image dir
                             save_im_dir = os.path.join(save_cavet_fields_detector_path,
                                                        class_i + "_" + im_name)
@@ -294,22 +297,13 @@ class OcrOfficial:
                                 # Save image for debug
                                 read_im.save(os.path.join(
                                     save_cavet_fields_detector_path, class_i + "_processed" + im_name))
-
                                 result_text_recognizer = self.model_text_recognizer.predict(
                                     read_im)
+                                # Spell check for fullname
+                                result_text_recognizer = result_text_recognizer if class_i != 'fullname' else name_processer(result_text_recognizer)
+                                result_text_recognizer = result_text_recognizer if class_i != 'poo' else proccess_poo(save_im_dir)
+                                result_text_recognizer = result_text_recognizer if class_i != 'por' else proccess_por(save_im_dir)
 
-                                # Spell check for color field
-                                result_text_recognizer = result_text_recognizer if class_i != 'color' else find_best_match(
-                                    text=result_text_recognizer, directory='./helpers/levenshtein/color_dataset.txt')
-
-                                # Spell check for brands field
-                                result_text_recognizer = result_text_recognizer if class_i != 'brand' else find_best_match(
-                                    text=result_text_recognizer, directory='./helpers/levenshtein/car_brands.txt')
-
-                                # Get text
-                                # print(
-                                #     f"Text in {class_i} is {result_text_recognizer}")
-                                # Save to object
                                 object_to_save[class_i] = result_text_recognizer
                             except Exception as e:
                                 print(e)

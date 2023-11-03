@@ -8,3 +8,5 @@
 *.pyc
 .note
 *.json
+*.env
+env
