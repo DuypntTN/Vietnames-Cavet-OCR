@@ -36,7 +36,7 @@ class OcrOfficial:
         config = Cfg.load_config_from_name('vgg_transformer')
         config['weights'] = './weights/Viet_ocr_transformerocr.pth'
         config['cnn']['pretrained'] = False
-        config['device'] = 'cuda:0'
+        config['device'] = 'cuda:0' if torch.cuda.is_available() else 'cpu'
         config['predictor']['beamsearch'] = False
         self.model_text_recognizer = Predictor(config)
 
@@ -329,6 +329,10 @@ class OcrOfficial:
 
 
 if __name__ == "__main__":
+    # Torch not use GPU by default
+    torch.set_default_tensor_type('torch.cuda.FloatTensor') if torch.cuda.is_available(
+    ) else torch.set_default_tensor_type('torch.FloatTensor')
+
     ocr = OcrOfficial(
         wc_path="./weights/CavetDetector_v1.pt",
         wcf_path="./weights/last.pt"
